@@ -1,44 +1,61 @@
-const input = document.getElementById("movieInput")
-const suggestions = document.getElementById("suggestions")
-const result = document.getElementById("result")
+const input = document.getElementById("movieInput");
+const result = document.getElementById("result");
+const suggestions = document.getElementById("suggestions");
 
-let timer
+let debounceTimer;
 
 input.addEventListener("input", () => {
-	clearTimeout(timer)
 
-	timer = setTimeout(search, 300)
-})
+    clearTimeout(debounceTimer);
 
-async function search() {
-	const query = input.value.trim()
+    debounceTimer = setTimeout(searchMovies, 300);
 
-	if (query.length < 2) {
-		suggestions.innerHTML = ""
-		return
-	}
+});
 
-	const res = await fetch(
-		`/.netlify/functions/movie?q=${encodeURIComponent(query)}`,
-	)
+async function searchMovies() {
 
-	const data = await res.json()
+    const query = input.value.trim();
 
-	suggestions.innerHTML = ""
+    if (query.length < 2) {
+        suggestions.innerHTML = "";
+        return;
+    }
 
-	data.results.slice(0, 5).forEach(movie => {
-		const div = document.createElement("div")
+    try {
 
-		div.className = "suggestion"
+        const response = await fetch(
+            `/.netlify/functions/movie?q=${encodeURIComponent(query)}`
+        );
 
-		div.textContent = movie.title
+        const data = await response.json();
 
-		div.onclick = () => {
-			result.innerText = "English title: " + movie.english
+        suggestions.innerHTML = "";
 
-			suggestions.innerHTML = ""
-		}
+        data.results.slice(0,5).forEach(movie => {
 
-		suggestions.appendChild(div)
-	})
+            const div = document.createElement("div");
+            div.className = "suggestion";
+
+            div.textContent = `${movie.title} (${movie.year})`;
+
+            div.onclick = () => {
+
+                input.value = movie.title;
+                suggestions.innerHTML = "";
+
+                result.innerText = "English title: " + movie.english;
+
+            };
+
+            suggestions.appendChild(div);
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+        result.innerText = "Ошибка запроса";
+
+    }
+
 }
