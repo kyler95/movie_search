@@ -1,20 +1,42 @@
-export async function handler(event) {
-	const query = event.queryStringParameters.q
+export async function handler(event){
 
-	const api = process.env.TMDB_KEY
+const query = event.queryStringParameters.q;
+const api = process.env.TMDB_KEY;
 
-	const url = `https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${encodeURIComponent(query)}&language=ru-RU`
+// поиск фильма
+const searchUrl =
+`https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${encodeURIComponent(query)}&language=ru-RU`;
 
-	const res = await fetch(url)
-	const data = await res.json()
+const res = await fetch(searchUrl);
+const data = await res.json();
 
-	const results = data.results.map(m => ({
-		title: m.title,
-		english: m.original_title,
-	}))
+// для первых 5 фильмов получаем английские переводы
+const results = await Promise.all(
 
-	return {
-		statusCode: 200,
-		body: JSON.stringify({ results }),
-	}
+data.results.slice(0,5).map(async movie => {
+
+const transUrl =
+`https://api.themoviedb.org/3/movie/${movie.id}/translations?api_key=${api}`;
+
+const tRes = await fetch(transUrl);
+const tData = await tRes.json();
+
+const english = tData.translations.find(t => t.iso_639_1 === "en");
+
+return {
+id: movie.id,
+title: movie.title,
+year: movie.release_date ? movie.release_date.slice(0,4) : "?",
+english: english?.data?.title || movie.original_title
+};
+
+})
+
+);
+
+return {
+statusCode:200,
+body:JSON.stringify({results})
+};
+
 }
