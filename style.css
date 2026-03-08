@@ -1,0 +1,54 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	font-family: Arial;
+	background: #f4f6f8;
+	padding: 40px;
+}
+
+.container {
+	max-width: 500px;
+	margin: auto;
+	background: white;
+	padding: 25px;
+	border-radius: 12px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+	position: relative;
+}
+
+input {
+	width: 100%;
+	padding: 12px;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+}
+
+#suggestions {
+	position: absolute;
+	top: 100px;
+	left: 25px;
+	right: 25px;
+	background: white;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	max-height: 200px;
+	overflow-y: auto;
+}
+
+.suggestion {
+	padding: 10px;
+	cursor: pointer;
+}
+
+.suggestion:hover {
+	background: #f2f2f2;
+}
+
+#result {
+	margin-top: 20px;
+	font-weight: bold;
+	font-size: 18px;
+}
