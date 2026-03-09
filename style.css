@@ -1,75 +1,79 @@
 *{
-  box-sizing:border-box;
+box-sizing:border-box;
 }
 
 body{
-  font-family:Arial, sans-serif;
-  background:#f4f6f8;
-  padding:40px;
-  margin:0;
+font-family:Arial, sans-serif;
+background:#f4f6f8;
+padding:40px;
+margin:0;
 }
 
 .container{
-  max-width:500px;
-  margin:auto;
-  background:white;
-  padding:25px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
-  position:relative; /* важно для выпадающего списка */
+max-width:500px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
-h2{
-  margin-top:0;
-  margin-bottom:15px;
+/* общий блок поиска */
+.search-box{
+position:relative;
+width:100%;
 }
 
 input{
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  border:1px solid #ccc;
-  border-radius:6px;
+width:100%;
+padding:12px;
+font-size:16px;
+border:1px solid #ccc;
+border-radius:6px;
+outline:none;
 }
 
+/* убираем синюю/серую линию браузера */
 input:focus{
-  outline:none;
-  border-color:#3b82f6;
+border-color:#3b82f6;
+box-shadow:none;
 }
 
 /* выпадающий список */
 #suggestions{
-  position:absolute;
-  top:95px;          /* сразу под input */
-  left:25px;
-  right:25px;
-  background:white;
-  border:1px solid #ddd;
-  border-top:none;
-  border-radius:0 0 6px 6px;
-  max-height:220px;
-  overflow-y:auto;
-  z-index:10;
+position:absolute;
+top:100%;
+left:0;
+right:0;
+
+background:white;
+border:1px solid #ccc;
+border-top:none;
+
+border-radius:0 0 6px 6px;
+
+max-height:220px;
+overflow-y:auto;
+
+display:none;
 }
 
 /* вариант */
 .suggestion{
-  padding:10px 12px;
-  cursor:pointer;
+padding:10px 12px;
+cursor:pointer;
 }
 
 .suggestion:hover{
-  background:#f1f5f9;
+background:#f1f5f9;
 }
 
-/* выбранный стрелками вариант */
 .suggestion.active{
-  background:#e2e8f0;
+background:#e2e8f0;
 }
 
 #result{
-  margin-top:20px;
-  font-size:18px;
-  font-weight:bold;
+margin-top:20px;
+font-size:18px;
+font-weight:bold;
 }
-
