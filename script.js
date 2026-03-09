@@ -51,7 +51,7 @@ function updateActive(items){
 
 async function searchMovies() {
 
-    const query = input.value.trim();
+    const query = input.value.trim().toLowerCase();
 
     if (query.length < 2) {
         suggestions.innerHTML = "";
@@ -67,12 +67,26 @@ async function searchMovies() {
 
         const data = await response.json();
 
+        // улучшение точности поиска
+        const sorted = data.results.sort((a,b) => {
+
+            const aExact = a.title.toLowerCase() === query;
+            const bExact = b.title.toLowerCase() === query;
+
+            if(aExact && !bExact) return -1;
+            if(!aExact && bExact) return 1;
+
+            return 0;
+
+        });
+
         suggestions.innerHTML = "";
         suggestions.style.display = "block";
-        currentResults = data.results;
+
+        currentResults = sorted;
         currentIndex = -1;
 
-        data.results.slice(0,5).forEach((movie, index) => {
+        sorted.slice(0,5).forEach(movie => {
 
             const div = document.createElement("div");
             div.className = "suggestion";
@@ -97,6 +111,7 @@ async function searchMovies() {
 function selectMovie(movie){
 
     input.value = movie.title;
+
     suggestions.innerHTML = "";
     suggestions.style.display = "none";
 
@@ -111,4 +126,3 @@ document.addEventListener("click", (e) => {
     }
 
 });
-
