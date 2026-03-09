@@ -1,18 +1,37 @@
 export async function handler(event){
 
-const query = event.queryStringParameters.q.toLowerCase();
+const queryRaw = event.queryStringParameters.q;
 const api = process.env.TMDB_KEY;
 
-const searchUrl =
+if(!queryRaw){
+return {
+statusCode:400,
+body:JSON.stringify({error:"No query"})
+};
+}
+
+// извлекаем год из запроса
+const yearMatch = queryRaw.match(/\b(19|20)\d{2}\b/);
+const year = yearMatch ? yearMatch[0] : null;
+
+// убираем год из текста запроса
+const query = queryRaw.replace(/\b(19|20)\d{2}\b/, "").trim().toLowerCase();
+
+// формируем URL поиска
+let searchUrl =
 `https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${encodeURIComponent(query)}&language=ru-RU`;
+
+// если есть год — добавляем параметр
+if(year){
+searchUrl += `&year=${year}`;
+}
 
 const res = await fetch(searchUrl);
 const data = await res.json();
 
-// берём больше результатов
-const movies = data.results.slice(0,20);
+let movies = data.results || [];
 
-// сортируем по совпадению
+// сортировка для более точного результата
 movies.sort((a,b)=>{
 
 const aTitle = (a.title || "").toLowerCase();
@@ -31,6 +50,7 @@ return b.popularity - a.popularity;
 
 });
 
+// берём первые 5 фильмов
 const results = await Promise.all(
 
 movies.slice(0,5).map(async movie => {
@@ -41,7 +61,9 @@ const transUrl =
 const tRes = await fetch(transUrl);
 const tData = await tRes.json();
 
-const english = tData.translations.find(t => t.iso_639_1 === "en");
+const english = tData.translations.find(
+t => t.iso_639_1 === "en"
+);
 
 return {
 id: movie.id,
