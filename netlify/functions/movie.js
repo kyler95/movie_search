@@ -60,13 +60,21 @@ const tData = await tRes.json();
 
 const english = tData.translations.find(t => t.iso_639_1 === "en");
 
+let englishTitle;
+
+if(movie.original_language === "en"){
+englishTitle = movie.original_title;
+}else{
+englishTitle = english?.data?.title || movie.original_title;
+}
+
 return {
 id: movie.id,
 title: movie.title,
 year: movie.release_date ? movie.release_date.slice(0,4) : "?",
-english: english?.data?.title || movie.original_title
+english: englishTitle
 };
-
+  
 })
 
 );
