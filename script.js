@@ -55,6 +55,7 @@ async function searchMovies() {
 
     if (query.length < 2) {
         suggestions.innerHTML = "";
+        suggestions.style.display = "none";
         return;
     }
 
@@ -67,6 +68,7 @@ async function searchMovies() {
         const data = await response.json();
 
         suggestions.innerHTML = "";
+        suggestions.style.display = "block";
         currentResults = data.results;
         currentIndex = -1;
 
@@ -96,7 +98,17 @@ function selectMovie(movie){
 
     input.value = movie.title;
     suggestions.innerHTML = "";
+    suggestions.style.display = "none";
 
     result.innerText = "English title: " + movie.english;
 
 }
+
+document.addEventListener("click", (e) => {
+
+    if(!e.target.closest(".search-box")){
+        suggestions.style.display = "none";
+    }
+
+});
+
