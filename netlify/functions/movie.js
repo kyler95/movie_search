@@ -23,7 +23,7 @@ let query = queryRaw
 
 // поиск в TMDB
 let searchUrl =
-`https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${encodeURIComponent(query)}&language=en-US`;
+`https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${encodeURIComponent(query)}&language=ru-RU`;
 
 const res = await fetch(searchUrl);
 const data = await res.json();
