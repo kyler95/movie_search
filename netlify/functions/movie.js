@@ -14,9 +14,14 @@ body:JSON.stringify({error:"No query"})
 const yearMatch = queryRaw.match(/\b(19|20)\d{2}\b/);
 const year = yearMatch ? yearMatch[0] : null;
 
-// убираем год из текста
-const query = queryRaw.replace(/\b(19|20)\d{2}\b/, "").trim().toLowerCase();
+// очищаем текст запроса
+let query = queryRaw
+.replace(/\b(19|20)\d{2}\b/, "")
+.replace(/эпизод\s*\d+/i, "")
+.trim()
+.toLowerCase();
 
+// поиск в TMDB
 let searchUrl =
 `https://api.themoviedb.org/3/search/movie?api_key=${api}&query=${encodeURIComponent(query)}&language=ru-RU`;
 
@@ -25,14 +30,14 @@ const data = await res.json();
 
 let movies = data.results || [];
 
-// строгая фильтрация по году
+// фильтр по году если указан
 if(year){
 movies = movies.filter(movie =>
 movie.release_date && movie.release_date.startsWith(year)
 );
 }
 
-// сортировка
+// сортировка для повышения точности
 movies.sort((a,b)=>{
 
 const aTitle = (a.title || "").toLowerCase();
@@ -52,14 +57,18 @@ const results = await Promise.all(
 
 movies.slice(0,5).map(async movie => {
 
+// получаем переводы
 const transUrl =
 `https://api.themoviedb.org/3/movie/${movie.id}/translations?api_key=${api}`;
 
 const tRes = await fetch(transUrl);
 const tData = await tRes.json();
 
-const english = tData.translations.find(t => t.iso_639_1 === "en");
+const english = tData.translations.find(
+t => t.iso_639_1 === "en"
+);
 
+// логика выбора английского названия
 let englishTitle;
 
 if(movie.original_language === "en"){
@@ -74,7 +83,7 @@ title: movie.title,
 year: movie.release_date ? movie.release_date.slice(0,4) : "?",
 english: englishTitle
 };
-  
+
 })
 
 );
